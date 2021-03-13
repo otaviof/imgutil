@@ -17,6 +17,12 @@ import (
 	"github.com/containers/storage"
 )
 
+//
+// TODO:
+// 	* rename OCI to Image, therefore we have a `oci.Image` type;
+//  * rename short accessor to `i`, instead of `o`;
+//
+
 // OCI implements imgutil.Image interface, using buildah container-manager to handle local images.
 type OCI struct {
 	ctx      context.Context  // shared context
@@ -99,19 +105,19 @@ func (o *OCI) Labels() (map[string]string, error) {
 	return o.builder.Labels(), nil
 }
 
+// Name returns the current image repository name, in short the name.
 func (o *OCI) Name() string {
-	panic("[NOT-IMPLEMENTED] Name()")
-	return ""
+	return o.repoName
 }
 
+// OS returns the OS string.
 func (o *OCI) OS() (string, error) {
-	panic("[NOT-IMPLEMENTED] OS()")
-	return "", nil
+	return o.builder.OS(), nil
 }
 
+// OSVersion returns the OSVersion string.
 func (o *OCI) OSVersion() (string, error) {
-	panic("[NOT-IMPLEMENTED] OSVersion()")
-	return "", nil
+	return o.builder.Docker.OSVersion, nil
 }
 
 func (o *OCI) Rebase(baseTopLayer string, baseImage imgutil.Image) error {

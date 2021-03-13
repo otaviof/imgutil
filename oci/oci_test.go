@@ -20,6 +20,20 @@ func newImageTest(t *testing.T, repoName, from string) imgutil.Image {
 }
 
 func TestOCI(t *testing.T) {
+	t.Run("Name/OS", func(t *testing.T) {
+		img := newImageTest(t, "new-image", busyboxTag)
+
+		name := img.Name()
+		if name != "new-image" {
+			t.Fatalf("Name: invalid image name '%s'", name)
+		}
+
+		imgOS, _ := img.OS()
+		if imgOS == "" {
+			t.Fatal("OS: expected to return a given OS string")
+		}
+	})
+
 	t.Run("SetLabel/Label/Labels", func(t *testing.T) {
 		img := newImageTest(t, "new-image", busyboxTag)
 
