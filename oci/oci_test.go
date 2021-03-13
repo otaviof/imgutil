@@ -20,7 +20,7 @@ func newImageTest(t *testing.T, repoName, from string) imgutil.Image {
 }
 
 func TestOCI(t *testing.T) {
-	t.Run("SetLabel/Label", func(t *testing.T) {
+	t.Run("SetLabel/Label/Labels", func(t *testing.T) {
 		img := newImageTest(t, "new-image", busyboxTag)
 
 		err := img.SetLabel("key", "value")
@@ -34,6 +34,12 @@ func TestOCI(t *testing.T) {
 		}
 		if value != "value" {
 			t.Fatal("Label: label value is not correct")
+		}
+
+		labels, _ := img.Labels()
+		value, ok := labels["key"]
+		if value != "value" || !ok {
+			t.Fatal("Labels: not able to retrieve key")
 		}
 
 		if err := img.Save(); err != nil {

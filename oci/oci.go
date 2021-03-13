@@ -94,9 +94,9 @@ func (o *OCI) Label(key string) (string, error) {
 	return labels[key], nil
 }
 
+// Labels returns all labels present in the working container.
 func (o *OCI) Labels() (map[string]string, error) {
-	panic("[NOT-IMPLEMENTED] Labels()")
-	return nil, nil
+	return o.builder.Labels(), nil
 }
 
 func (o *OCI) Name() string {
