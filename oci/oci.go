@@ -45,14 +45,29 @@ func (o *OCI) AddLayerWithDiffID(path, diffID string) error {
 	return nil
 }
 
-func (o *OCI) Architecture() (string, error) {
-	panic("[NOT-IMPLEMENTED] Architecture()")
-	return "", nil
+// Name returns the current image repository name, in short the name.
+func (o *OCI) Name() string {
+	return o.repoName
 }
 
+// OS returns the OS string.
+func (o *OCI) OS() (string, error) {
+	return o.builder.OS(), nil
+}
+
+// OSVersion returns the OSVersion string.
+func (o *OCI) OSVersion() (string, error) {
+	return o.builder.Docker.OSVersion, nil
+}
+
+// Architecture returns the architecture string.
+func (o *OCI) Architecture() (string, error) {
+	return o.builder.Architecture(), nil
+}
+
+// CreatedAt returns the time of image creation.
 func (o *OCI) CreatedAt() (time.Time, error) {
-	panic("[NOT-IMPLEMENTED] CreatedAt()")
-	return time.Now(), nil
+	return o.builder.Docker.Created, nil
 }
 
 func (o *OCI) Delete() error {
@@ -109,21 +124,6 @@ func (o *OCI) Labels() (map[string]string, error) {
 func (o *OCI) RemoveLabel(key string) error {
 	o.builder.UnsetLabel(key)
 	return nil
-}
-
-// Name returns the current image repository name, in short the name.
-func (o *OCI) Name() string {
-	return o.repoName
-}
-
-// OS returns the OS string.
-func (o *OCI) OS() (string, error) {
-	return o.builder.OS(), nil
-}
-
-// OSVersion returns the OSVersion string.
-func (o *OCI) OSVersion() (string, error) {
-	return o.builder.Docker.OSVersion, nil
 }
 
 func (o *OCI) Rebase(baseTopLayer string, baseImage imgutil.Image) error {
