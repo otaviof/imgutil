@@ -40,4 +40,19 @@ func TestOCI(t *testing.T) {
 			t.Fatalf("Save: err='%v'", err)
 		}
 	})
+
+	t.Run("SetEnv/Env", func(t *testing.T) {
+		img := newImageTest(t, "new-image", busyboxTag)
+
+		_ = img.SetEnv("key", "value")
+
+		value, _ := img.Env("key")
+		if value != "value" {
+			t.Fatal("Label: label value is not correct")
+		}
+
+		if err := img.Save(); err != nil {
+			t.Fatalf("Save: err='%v'", err)
+		}
+	})
 }

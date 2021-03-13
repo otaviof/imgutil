@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/buildpacks/imgutil"
@@ -53,8 +54,21 @@ func (o *OCI) Delete() error {
 	return nil
 }
 
+// SetEnv set a environment variable key/value.
+func (o *OCI) SetEnv(k, v string) error {
+	o.builder.SetEnv(k, v)
+	return nil
+}
+
+// Env retrieve environment variable value, or empty in case of not found.
 func (o *OCI) Env(key string) (string, error) {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] Env(key='%s')", key))
+	// TODO: refactor to reuse the same logic that's on ``local.Image.Env()` (DRY);
+	for _, envVar := range o.builder.Env() {
+		parts := strings.Split(envVar, "=")
+		if key == parts[0] {
+			return parts[1], nil
+		}
+	}
 	return "", nil
 }
 
@@ -155,11 +169,6 @@ func (o *OCI) SetCmd(cmd ...string) error {
 
 func (o *OCI) SetEntrypoint(entrypoint ...string) error {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetEntrypoint(entrypoint='%#v')", entrypoint))
-	return nil
-}
-
-func (o *OCI) SetEnv(k, v string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetEnv(k='%s', v='%s')", k, v))
 	return nil
 }
 
