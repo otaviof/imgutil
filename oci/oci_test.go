@@ -20,7 +20,7 @@ func newImageTest(t *testing.T, repoName, from string) imgutil.Image {
 }
 
 func TestOCI(t *testing.T) {
-	t.Run("Name/OS", func(t *testing.T) {
+	t.Run("Name / OS", func(t *testing.T) {
 		img := newImageTest(t, "new-image", busyboxTag)
 
 		name := img.Name()
@@ -34,7 +34,7 @@ func TestOCI(t *testing.T) {
 		}
 	})
 
-	t.Run("SetLabel/Label/Labels", func(t *testing.T) {
+	t.Run("SetLabel / Label / Labels / RemoveLabel", func(t *testing.T) {
 		img := newImageTest(t, "new-image", busyboxTag)
 
 		err := img.SetLabel("key", "value")
@@ -53,7 +53,14 @@ func TestOCI(t *testing.T) {
 		labels, _ := img.Labels()
 		value, ok := labels["key"]
 		if value != "value" || !ok {
-			t.Fatal("Labels: not able to retrieve key")
+			t.Fatal("Labels: expect to not retrieve key")
+		}
+
+		_ = img.RemoveLabel("key")
+		labels, _ = img.Labels()
+		_, ok = labels["key"]
+		if ok {
+			t.Fatal("UnsetLabel: expect not to find lable 'key' anymore")
 		}
 
 		if err := img.Save(); err != nil {
@@ -61,7 +68,7 @@ func TestOCI(t *testing.T) {
 		}
 	})
 
-	t.Run("SetEnv/Env", func(t *testing.T) {
+	t.Run("SetEnv / Env", func(t *testing.T) {
 		img := newImageTest(t, "new-image", busyboxTag)
 
 		_ = img.SetEnv("key", "value")

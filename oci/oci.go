@@ -105,6 +105,12 @@ func (o *OCI) Labels() (map[string]string, error) {
 	return o.builder.Labels(), nil
 }
 
+// RemoveLabel unset a given label name from working container.
+func (o *OCI) RemoveLabel(key string) error {
+	o.builder.UnsetLabel(key)
+	return nil
+}
+
 // Name returns the current image repository name, in short the name.
 func (o *OCI) Name() string {
 	return o.repoName
@@ -122,11 +128,6 @@ func (o *OCI) OSVersion() (string, error) {
 
 func (o *OCI) Rebase(baseTopLayer string, baseImage imgutil.Image) error {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] Rebase(baseTopLayer='%s',baseImage'%#v')", baseTopLayer, baseImage))
-	return nil
-}
-
-func (o *OCI) RemoveLabel(l string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] RemoveLabel(l='%s')", l))
 	return nil
 }
 
