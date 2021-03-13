@@ -50,6 +50,11 @@ func (o *OCI) Name() string {
 	return o.repoName
 }
 
+// Rename renames the current image repository name.
+func (o *OCI) Rename(name string) {
+	o.repoName = name
+}
+
 // OS returns the OS string.
 func (o *OCI) OS() (string, error) {
 	return o.builder.OS(), nil
@@ -129,10 +134,6 @@ func (o *OCI) RemoveLabel(key string) error {
 func (o *OCI) Rebase(baseTopLayer string, baseImage imgutil.Image) error {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] Rebase(baseTopLayer='%s',baseImage'%#v')", baseTopLayer, baseImage))
 	return nil
-}
-
-func (o *OCI) Rename(name string) {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] Rename(name='%s')", name))
 }
 
 func (o *OCI) ReuseLayer(diffID string) error {
