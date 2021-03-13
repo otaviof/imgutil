@@ -133,6 +133,7 @@ func (o *OCI) ReuseLayer(diffID string) error {
 	return nil
 }
 
+// commit perform the commit action for informed image name.
 func (o *OCI) commit(name string) error {
 	imageRef, err := is.Transport.ParseStoreReference(o.store, name)
 	if err != nil {
@@ -147,6 +148,7 @@ func (o *OCI) commit(name string) error {
 	return err
 }
 
+// Save commit working container to persistent image storage, using default and additional names.
 func (o *OCI) Save(additionalNames ...string) error {
 	names := append(additionalNames, o.repoName)
 	for _, name := range names {
