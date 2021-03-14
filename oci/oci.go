@@ -128,14 +128,16 @@ func (i *Image) SetEnv(k, v string) error {
 	return nil
 }
 
+// Identifier returns the unique image identifier.
 func (i *Image) Identifier() (imgutil.Identifier, error) {
-	panic("[NOT-IMPLEMENTED] Identifier()")
-	return nil, nil
+	return IDIdentifier{
+		ImageID: i.builder.ContainerID,
+	}, nil
 }
 
+// Found make sure the image containers a unique identifier.
 func (i *Image) Found() bool {
-	panic("[NOT-IMPLEMENTED] Found()")
-	return false
+	return i.builder.ContainerID != ""
 }
 
 // Label returns the given lable name (key), or empty when not found.
