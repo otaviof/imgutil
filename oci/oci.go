@@ -194,9 +194,9 @@ func (i *Image) ReuseLayer(diffID string) error {
 	return nil
 }
 
+// Delete removes the working container.
 func (i *Image) Delete() error {
-	panic("[NOT-IMPLEMENTED] Delete()")
-	return nil
+	return i.builder.Delete()
 }
 
 // commit perform the commit action for informed image name.

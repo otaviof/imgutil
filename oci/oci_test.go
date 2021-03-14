@@ -38,6 +38,10 @@ func TestOCI(t *testing.T) {
 		// if arch != "" {
 		// 	t.Fatal("Architecture: expected to return a given architecture string")
 		// }
+
+		if err := img.Delete(); err != nil {
+			t.Fatalf("Delete: err='%v'", err)
+		}
 	})
 
 	t.Run("SetEntrypoint / Entrypoint", func(t *testing.T) {
@@ -49,6 +53,10 @@ func TestOCI(t *testing.T) {
 
 		if len(expected) != len(entrypoint) && expected[1] != entrypoint[1] {
 			t.Fatalf("SetEntrypoint: expected results ('%#v') not found '%#v'", expected, entrypoint)
+		}
+
+		if err := img.Delete(); err != nil {
+			t.Fatalf("Delete: err='%v'", err)
 		}
 	})
 
@@ -84,6 +92,9 @@ func TestOCI(t *testing.T) {
 		if err := img.Save(); err != nil {
 			t.Fatalf("Save: err='%v'", err)
 		}
+		if err := img.Delete(); err != nil {
+			t.Fatalf("Delete: err='%v'", err)
+		}
 	})
 
 	t.Run("SetEnv / Env", func(t *testing.T) {
@@ -98,6 +109,9 @@ func TestOCI(t *testing.T) {
 
 		if err := img.Save(); err != nil {
 			t.Fatalf("Save: err='%v'", err)
+		}
+		if err := img.Delete(); err != nil {
+			t.Fatalf("Delete: err='%v'", err)
 		}
 	})
 }
