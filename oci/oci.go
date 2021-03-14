@@ -35,16 +35,6 @@ type OCI struct {
 // systemContext global system context instance.
 var systemContext = &types.SystemContext{}
 
-func (o *OCI) AddLayer(path string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] AddLayer(path='%s')", path))
-	return nil
-}
-
-func (o *OCI) AddLayerWithDiffID(path, diffID string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] AddLayerWithDiffID(path='%s',diffID='%s')", path, diffID))
-	return nil
-}
-
 // Name returns the current image repository name, in short the name.
 func (o *OCI) Name() string {
 	return o.repoName
@@ -60,9 +50,19 @@ func (o *OCI) OS() (string, error) {
 	return o.builder.OS(), nil
 }
 
+func (o *OCI) SetOS(name string) error {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetOS(name='%s')", name))
+	return nil
+}
+
 // OSVersion returns the OSVersion string.
 func (o *OCI) OSVersion() (string, error) {
 	return o.builder.Docker.OSVersion, nil
+}
+
+func (o *OCI) SetOSVersion(version string) error {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetOSVersion(version='%s')", version))
+	return nil
 }
 
 // Architecture returns the architecture string.
@@ -70,20 +70,39 @@ func (o *OCI) Architecture() (string, error) {
 	return o.builder.Architecture(), nil
 }
 
+func (o *OCI) SetArchitecture(arch string) error {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetArchitecture(arch='%s')", arch))
+	return nil
+}
+
 // CreatedAt returns the time of image creation.
 func (o *OCI) CreatedAt() (time.Time, error) {
 	return o.builder.Docker.Created, nil
 }
 
-func (o *OCI) Delete() error {
-	panic("[NOT-IMPLEMENTED] Delete()")
+func (o *OCI) SetCmd(cmd ...string) error {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetCmd(cmd='%#v')", cmd))
 	return nil
 }
 
-// SetEnv set a environment variable key/value.
-func (o *OCI) SetEnv(k, v string) error {
-	o.builder.SetEnv(k, v)
+func (o *OCI) Entrypoint() ([]string, error) {
+	panic("[NOT-IMPLEMENTED] Entrypoint()")
+	return []string{}, nil
+}
+
+func (o *OCI) SetEntrypoint(entrypoint ...string) error {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetEntrypoint(entrypoint='%#v')", entrypoint))
 	return nil
+}
+
+func (o *OCI) SetWorkingDir(dir string) error {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetWorkingDir(dir='%s')", dir))
+	return nil
+}
+
+func (o *OCI) ManifestSize() (int64, error) {
+	panic("[NOT-IMPLEMENTED] ManifestSize()")
+	return 0, nil
 }
 
 // Env retrieve environment variable value, or empty in case of not found.
@@ -98,19 +117,20 @@ func (o *OCI) Env(key string) (string, error) {
 	return "", nil
 }
 
-func (o *OCI) Found() bool {
-	panic("[NOT-IMPLEMENTED] Found()")
-	return false
-}
-
-func (o *OCI) GetLayer(diffID string) (io.ReadCloser, error) {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] GetLayer(diffID='%s')", diffID))
-	return nil, nil
+// SetEnv set a environment variable key/value.
+func (o *OCI) SetEnv(k, v string) error {
+	o.builder.SetEnv(k, v)
+	return nil
 }
 
 func (o *OCI) Identifier() (imgutil.Identifier, error) {
 	panic("[NOT-IMPLEMENTED] Identifier()")
 	return nil, nil
+}
+
+func (o *OCI) Found() bool {
+	panic("[NOT-IMPLEMENTED] Found()")
+	return false
 }
 
 // Label returns the given lable name (key), or empty when not found.
@@ -125,10 +145,36 @@ func (o *OCI) Labels() (map[string]string, error) {
 	return o.builder.Labels(), nil
 }
 
+// SetLabel writes the label key-value pair on the working image.
+func (o *OCI) SetLabel(k, v string) error {
+	o.builder.SetLabel(k, v)
+	return nil
+}
+
 // RemoveLabel unset a given label name from working container.
 func (o *OCI) RemoveLabel(key string) error {
 	o.builder.UnsetLabel(key)
 	return nil
+}
+
+func (o *OCI) AddLayer(path string) error {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] AddLayer(path='%s')", path))
+	return nil
+}
+
+func (o *OCI) AddLayerWithDiffID(path, diffID string) error {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] AddLayerWithDiffID(path='%s',diffID='%s')", path, diffID))
+	return nil
+}
+
+func (o *OCI) TopLayer() (string, error) {
+	panic("[NOT-IMPLEMENTED] TopLayer()")
+	return "", nil
+}
+
+func (o *OCI) GetLayer(diffID string) (io.ReadCloser, error) {
+	panic(fmt.Sprintf("[NOT-IMPLEMENTED] GetLayer(diffID='%s')", diffID))
+	return nil, nil
 }
 
 func (o *OCI) Rebase(baseTopLayer string, baseImage imgutil.Image) error {
@@ -138,6 +184,11 @@ func (o *OCI) Rebase(baseTopLayer string, baseImage imgutil.Image) error {
 
 func (o *OCI) ReuseLayer(diffID string) error {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] ReuseLayer(diffID='%s')", diffID))
+	return nil
+}
+
+func (o *OCI) Delete() error {
+	panic("[NOT-IMPLEMENTED] Delete()")
 	return nil
 }
 
@@ -165,57 +216,6 @@ func (o *OCI) Save(additionalNames ...string) error {
 		}
 	}
 	return nil
-}
-
-func (o *OCI) SetArchitecture(arch string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetArchitecture(arch='%s')", arch))
-	return nil
-}
-
-func (o *OCI) SetCmd(cmd ...string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetCmd(cmd='%#v')", cmd))
-	return nil
-}
-
-func (o *OCI) SetEntrypoint(entrypoint ...string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetEntrypoint(entrypoint='%#v')", entrypoint))
-	return nil
-}
-
-// SetLabel writes the label key-value pair on the working image.
-func (o *OCI) SetLabel(k, v string) error {
-	o.builder.SetLabel(k, v)
-	return nil
-}
-
-func (o *OCI) SetOS(name string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetOS(name='%s')", name))
-	return nil
-}
-
-func (o *OCI) SetOSVersion(version string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetOSVersion(version='%s')", version))
-	return nil
-}
-
-func (o *OCI) SetWorkingDir(dir string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetWorkingDir(dir='%s')", dir))
-	return nil
-}
-
-func (o *OCI) TopLayer() (string, error) {
-	panic("[NOT-IMPLEMENTED] TopLayer()")
-	return "", nil
-}
-
-func (o *OCI) Entrypoint() ([]string, error) {
-	panic("[NOT-IMPLEMENTED] Entrypoint()")
-	return []string{}, nil
-}
-
-func (o *OCI) ManifestSize() (int64, error) {
-	panic("[NOT-IMPLEMENTED] ManifestSize()")
-	return 0, nil
 }
 
 func (o *OCI) bootstrap() error {
