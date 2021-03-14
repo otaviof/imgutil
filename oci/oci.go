@@ -19,12 +19,11 @@ import (
 
 //
 // TODO:
-// 	* rename OCI to Image, therefore we have a `oci.Image` type;
-//  * rename short accessor to `i`, instead of `o`;
+//	* create a `doc.go` file;
 //
 
-// OCI implements imgutil.Image interface, using buildah container-manager to handle local images.
-type OCI struct {
+// Image implements imgutil.Image interface, using buildah container-manager to handle local images.
+type Image struct {
 	ctx      context.Context  // shared context
 	from     string           // from image-tag
 	repoName string           // target image-tag
@@ -36,81 +35,85 @@ type OCI struct {
 var systemContext = &types.SystemContext{}
 
 // Name returns the current image repository name, in short the name.
-func (o *OCI) Name() string {
-	return o.repoName
+func (i *Image) Name() string {
+	return i.repoName
 }
 
 // Rename renames the current image repository name.
-func (o *OCI) Rename(name string) {
-	o.repoName = name
+func (i *Image) Rename(name string) {
+	i.repoName = name
 }
 
 // OS returns the OS string.
-func (o *OCI) OS() (string, error) {
-	return o.builder.OS(), nil
+func (i *Image) OS() (string, error) {
+	return i.builder.OS(), nil
 }
 
-func (o *OCI) SetOS(name string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetOS(name='%s')", name))
+// SetOS sets the os name.
+func (i *Image) SetOS(name string) error {
+	i.builder.SetOS(name)
 	return nil
 }
 
 // OSVersion returns the OSVersion string.
-func (o *OCI) OSVersion() (string, error) {
-	return o.builder.Docker.OSVersion, nil
+func (i *Image) OSVersion() (string, error) {
+	return i.builder.Docker.OSVersion, nil
 }
 
-func (o *OCI) SetOSVersion(version string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetOSVersion(version='%s')", version))
+// SetOSVersion operating system version is not currently supported.
+func (i *Image) SetOSVersion(version string) error {
+	// TODO: check the impact of not setting os-version;
 	return nil
 }
 
 // Architecture returns the architecture string.
-func (o *OCI) Architecture() (string, error) {
-	return o.builder.Architecture(), nil
+func (i *Image) Architecture() (string, error) {
+	return i.builder.Architecture(), nil
 }
 
-func (o *OCI) SetArchitecture(arch string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetArchitecture(arch='%s')", arch))
+// SetArchitecture sets the image arachitecture.
+func (i *Image) SetArchitecture(arch string) error {
+	i.builder.SetArchitecture(arch)
 	return nil
 }
 
 // CreatedAt returns the time of image creation.
-func (o *OCI) CreatedAt() (time.Time, error) {
-	return o.builder.Docker.Created, nil
+func (i *Image) CreatedAt() (time.Time, error) {
+	return i.builder.Docker.Created, nil
 }
 
 // SetCmd set a new cmd slice.
-func (o *OCI) SetCmd(cmd ...string) error {
-	o.builder.SetCmd(cmd)
+func (i *Image) SetCmd(cmd ...string) error {
+	i.builder.SetCmd(cmd)
 	return nil
 }
 
 // Entrypoint returns the current entrypoint.
-func (o *OCI) Entrypoint() ([]string, error) {
-	return o.builder.Entrypoint(), nil
+func (i *Image) Entrypoint() ([]string, error) {
+	return i.builder.Entrypoint(), nil
 }
 
 // SetEntrypoint set a new entrypoint slice.
-func (o *OCI) SetEntrypoint(entrypoint ...string) error {
-	o.builder.SetEntrypoint(entrypoint)
+func (i *Image) SetEntrypoint(entrypoint ...string) error {
+	i.builder.SetEntrypoint(entrypoint)
 	return nil
 }
 
-func (o *OCI) SetWorkingDir(dir string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetWorkingDir(dir='%s')", dir))
+// SetWorkingDir set the working-directory.
+func (i *Image) SetWorkingDir(dir string) error {
+	i.builder.SetWorkDir(dir)
 	return nil
 }
 
-func (o *OCI) ManifestSize() (int64, error) {
-	panic("[NOT-IMPLEMENTED] ManifestSize()")
-	return 0, nil
+// ManifestSize returns the actual manifest size.
+func (i *Image) ManifestSize() (int64, error) {
+	return i.builder.Docker.Size, nil
 }
 
 // Env retrieve environment variable value, or empty in case of not found.
-func (o *OCI) Env(key string) (string, error) {
+func (i *Image) Env(key string) (string, error) {
 	// TODO: refactor to reuse the same logic that's on ``local.Image.Env()` (DRY);
-	for _, envVar := range o.builder.Env() {
+	for _, envVar := range i.builder.Env() {
 		parts := strings.Split(envVar, "=")
 		if key == parts[0] {
 			return parts[1], nil
@@ -120,88 +123,88 @@ func (o *OCI) Env(key string) (string, error) {
 }
 
 // SetEnv set a environment variable key/value.
-func (o *OCI) SetEnv(k, v string) error {
-	o.builder.SetEnv(k, v)
+func (i *Image) SetEnv(k, v string) error {
+	i.builder.SetEnv(k, v)
 	return nil
 }
 
-func (o *OCI) Identifier() (imgutil.Identifier, error) {
+func (i *Image) Identifier() (imgutil.Identifier, error) {
 	panic("[NOT-IMPLEMENTED] Identifier()")
 	return nil, nil
 }
 
-func (o *OCI) Found() bool {
+func (i *Image) Found() bool {
 	panic("[NOT-IMPLEMENTED] Found()")
 	return false
 }
 
 // Label returns the given lable name (key), or empty when not found.
-func (o *OCI) Label(key string) (string, error) {
+func (i *Image) Label(key string) (string, error) {
 	// TODO: it should return a specific error when informed label is not found;
-	labels := o.builder.Labels()
+	labels := i.builder.Labels()
 	return labels[key], nil
 }
 
 // Labels returns all labels present in the working container.
-func (o *OCI) Labels() (map[string]string, error) {
-	return o.builder.Labels(), nil
+func (i *Image) Labels() (map[string]string, error) {
+	return i.builder.Labels(), nil
 }
 
 // SetLabel writes the label key-value pair on the working image.
-func (o *OCI) SetLabel(k, v string) error {
-	o.builder.SetLabel(k, v)
+func (i *Image) SetLabel(k, v string) error {
+	i.builder.SetLabel(k, v)
 	return nil
 }
 
 // RemoveLabel unset a given label name from working container.
-func (o *OCI) RemoveLabel(key string) error {
-	o.builder.UnsetLabel(key)
+func (i *Image) RemoveLabel(key string) error {
+	i.builder.UnsetLabel(key)
 	return nil
 }
 
-func (o *OCI) AddLayer(path string) error {
+func (i *Image) AddLayer(path string) error {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] AddLayer(path='%s')", path))
 	return nil
 }
 
-func (o *OCI) AddLayerWithDiffID(path, diffID string) error {
+func (i *Image) AddLayerWithDiffID(path, diffID string) error {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] AddLayerWithDiffID(path='%s',diffID='%s')", path, diffID))
 	return nil
 }
 
-func (o *OCI) TopLayer() (string, error) {
+func (i *Image) TopLayer() (string, error) {
 	panic("[NOT-IMPLEMENTED] TopLayer()")
 	return "", nil
 }
 
-func (o *OCI) GetLayer(diffID string) (io.ReadCloser, error) {
+func (i *Image) GetLayer(diffID string) (io.ReadCloser, error) {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] GetLayer(diffID='%s')", diffID))
 	return nil, nil
 }
 
-func (o *OCI) Rebase(baseTopLayer string, baseImage imgutil.Image) error {
+func (i *Image) Rebase(baseTopLayer string, baseImage imgutil.Image) error {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] Rebase(baseTopLayer='%s',baseImage'%#v')", baseTopLayer, baseImage))
 	return nil
 }
 
-func (o *OCI) ReuseLayer(diffID string) error {
+func (i *Image) ReuseLayer(diffID string) error {
 	panic(fmt.Sprintf("[NOT-IMPLEMENTED] ReuseLayer(diffID='%s')", diffID))
 	return nil
 }
 
-func (o *OCI) Delete() error {
+func (i *Image) Delete() error {
 	panic("[NOT-IMPLEMENTED] Delete()")
 	return nil
 }
 
 // commit perform the commit action for informed image name.
-func (o *OCI) commit(name string) error {
-	imageRef, err := is.Transport.ParseStoreReference(o.store, name)
+func (i *Image) commit(name string) error {
+	imageRef, err := is.Transport.ParseStoreReference(i.store, name)
 	if err != nil {
 		return err
 	}
 
-	id, ref, _, err := o.builder.Commit(o.ctx, imageRef, buildah.CommitOptions{
+	id, ref, _, err := i.builder.Commit(i.ctx, imageRef, buildah.CommitOptions{
 		SystemContext: systemContext,
 		Compression:   imagebuildah.Gzip,
 	})
@@ -210,26 +213,27 @@ func (o *OCI) commit(name string) error {
 }
 
 // Save commit working container to persistent image storage, using default and additional names.
-func (o *OCI) Save(additionalNames ...string) error {
-	names := append(additionalNames, o.repoName)
+func (i *Image) Save(additionalNames ...string) error {
+	names := append(additionalNames, i.repoName)
 	for _, name := range names {
-		if err := o.commit(name); err != nil {
+		if err := i.commit(name); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (o *OCI) bootstrap() error {
+// bootstrap perform the initial steps to bootstrap the container manager.
+func (i *Image) bootstrap() error {
 	var err error
-	if o.store, err = bootstrapContainerStorage(); err != nil {
+	if i.store, err = bootstrapContainerStorage(); err != nil {
 		return err
 	}
-	o.builder, err = buildah.NewBuilder(o.ctx, o.store, buildah.BuilderOptions{
+	i.builder, err = buildah.NewBuilder(i.ctx, i.store, buildah.BuilderOptions{
 		CommonBuildOpts:  &buildah.CommonBuildOptions{},
 		ConfigureNetwork: buildah.NetworkDefault,
 		Format:           buildah.OCIv1ImageManifest,
-		FromImage:        o.from,
+		FromImage:        i.from,
 		Isolation:        buildah.IsolationChroot,
 		ReportWriter:     os.Stderr,
 		SystemContext:    systemContext,
@@ -237,16 +241,14 @@ func (o *OCI) bootstrap() error {
 	return err
 }
 
-// TODO:
-// * re-organize methods, make sure the sequence is well organized;
-// * rename "NewOCI" to "NewImage", following the "local" and "remote" implementations;
-
-func NewImage(ctx context.Context, repoName, from string) (*OCI, error) {
+// NewImage instantiate a new OCI image, executing re-init and other actions to bootstrap the
+// container manager and its dependencies.
+func NewImage(ctx context.Context, repoName, from string) (*Image, error) {
 	ReInit()
-	img := &OCI{
+	i := &Image{
 		ctx:      ctx,
 		repoName: repoName,
 		from:     from,
 	}
-	return img, img.bootstrap()
+	return i, i.bootstrap()
 }
