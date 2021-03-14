@@ -40,6 +40,18 @@ func TestOCI(t *testing.T) {
 		// }
 	})
 
+	t.Run("SetEntrypoint / Entrypoint", func(t *testing.T) {
+		img := newImageTest(t, "new-image", busyboxTag)
+
+		expected := []string{"entrypoint", "arg"}
+		_ = img.SetEntrypoint(expected...)
+		entrypoint, _ := img.Entrypoint()
+
+		if len(expected) != len(entrypoint) && expected[1] != entrypoint[1] {
+			t.Fatalf("SetEntrypoint: expected results ('%#v') not found '%#v'", expected, entrypoint)
+		}
+	})
+
 	t.Run("SetLabel / Label / Labels / RemoveLabel", func(t *testing.T) {
 		img := newImageTest(t, "new-image", busyboxTag)
 

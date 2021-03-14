@@ -80,18 +80,20 @@ func (o *OCI) CreatedAt() (time.Time, error) {
 	return o.builder.Docker.Created, nil
 }
 
+// SetCmd set a new cmd slice.
 func (o *OCI) SetCmd(cmd ...string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetCmd(cmd='%#v')", cmd))
+	o.builder.SetCmd(cmd)
 	return nil
 }
 
+// Entrypoint returns the current entrypoint.
 func (o *OCI) Entrypoint() ([]string, error) {
-	panic("[NOT-IMPLEMENTED] Entrypoint()")
-	return []string{}, nil
+	return o.builder.Entrypoint(), nil
 }
 
+// SetEntrypoint set a new entrypoint slice.
 func (o *OCI) SetEntrypoint(entrypoint ...string) error {
-	panic(fmt.Sprintf("[NOT-IMPLEMENTED] SetEntrypoint(entrypoint='%#v')", entrypoint))
+	o.builder.SetEntrypoint(entrypoint)
 	return nil
 }
 
